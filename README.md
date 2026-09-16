@@ -20,5 +20,6 @@ tune = parse_tune("example.msq")
 print(tune.root.tag)
 
 table = tune.root.find("table")
-print(table.attributes)
+if table is not None:
+    print(table.attributes)
 ```

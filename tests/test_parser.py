@@ -57,6 +57,13 @@ class ParseTuneTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 parse_tune(str(missing_path))
 
+    def test_parse_tune_file_raises_for_missing_file(self) -> None:
+        with TemporaryDirectory() as directory:
+            missing_path = Path(directory) / "missing-file.msq"
+
+            with self.assertRaises(FileNotFoundError):
+                parse_tune_file(missing_path)
+
 
 if __name__ == "__main__":
     unittest.main()

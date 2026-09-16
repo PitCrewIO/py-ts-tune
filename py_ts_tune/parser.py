@@ -55,12 +55,12 @@ def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
     if not isinstance(source, str):
         raise TypeError("source must be XML text, XML bytes, or a filesystem path")
 
-    if _looks_like_xml(source):
-        return _parse_xml(source)
-
     path = Path(source)
     if path.exists():
         return parse_tune_file(path)
+
+    if _looks_like_xml(source):
+        return _parse_xml(source)
 
     raise FileNotFoundError(source)
 
