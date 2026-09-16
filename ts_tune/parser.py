@@ -43,7 +43,7 @@ def parse(source: str | PathLike[str]) -> Tune:
     if _looks_like_xml(source):
         return _parse_xml(source)
 
-    if _looks_like_path(source):
+    if _looks_like_path(path, source):
         return _parse_file(path)
 
     return _parse_xml(source)
@@ -75,10 +75,9 @@ def _looks_like_xml(source: str) -> bool:
     return stripped.startswith("<")
 
 
-def _looks_like_path(source: str) -> bool:
+def _looks_like_path(path: Path, source: str) -> bool:
     """Return whether a string should be treated as a likely filename."""
 
-    path = Path(source)
     return path.is_absolute() or path.suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
 
 
