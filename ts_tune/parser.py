@@ -40,8 +40,7 @@ def parse(source: str | PathLike[str]) -> Tune:
         return _parse_xml(source)
 
     if _looks_like_path(source):
-        resolved_path = path.resolve(strict=False)
-        raise FileNotFoundError(2, "TunerStudio tune file not found", str(resolved_path))
+        return _parse_file(path)
 
     return _parse_xml(source)
 
@@ -78,19 +77,16 @@ def _looks_like_path(source: str) -> bool:
     return path.suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
 
 
-def _parse_xml(data: str, source: str | None = None) -> Tune:
-    """Parse XML data into a :class:`Tune` object.
-    """
+def _parse_xml(data: str) -> Tune:
+    """Parse XML data into a :class:`Tune` object."""
 
     try:
         root = ElementTree.fromstring(data)
     except ElementTree.ParseError as exc:
         message = f"Invalid TunerStudio tune XML: {exc}"
-        if source is not None:
-            message = f"{message} ({source})"
         raise TuneParseError(message) from exc
 
-    return Tune(root=_build_node(root), source=source)
+    return Tune(root=_build_node(root))
 
 
 def _build_node(element: ElementTree.Element) -> TuneNode:
