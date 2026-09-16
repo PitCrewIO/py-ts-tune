@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -76,8 +77,14 @@ class ParseTuneTests(unittest.TestCase):
                 parse_tune(str(missing_path))
 
     def test_parse_tune_raises_for_missing_relative_unknown_extension_file(self) -> None:
-        with self.assertRaises(FileNotFoundError):
-            parse_tune("missing-file.custom")
+        original_cwd = Path.cwd()
+        with TemporaryDirectory() as directory:
+            os.chdir(directory)
+            try:
+                with self.assertRaises(FileNotFoundError):
+                    parse_tune("missing-file.custom")
+            finally:
+                os.chdir(original_cwd)
 
     def test_parse_tune_raises_for_invalid_plain_text(self) -> None:
         with self.assertRaises(TuneParseError):
