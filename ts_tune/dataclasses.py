@@ -1,4 +1,4 @@
-'''Module dataclasses for TunerStudio tune representation.'''
+"""Data classes for TunerStudio tune representation."""
 
 from types import MappingProxyType
 from dataclasses import dataclass
@@ -53,4 +53,4 @@ class Tune:
 def freeze_attributes(attributes: dict[str, str]) -> Mapping[str, str]:
     """Return a read-only mapping for XML element attributes."""
 
-    return MappingProxyType(dict(attributes))
+    return MappingProxyType(attributes)
