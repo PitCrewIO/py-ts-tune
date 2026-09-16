@@ -84,7 +84,7 @@ def parse_tune_file(path: str | PathLike[str]) -> Tune:
     try:
         data = file_path.read_bytes()
     except FileNotFoundError as exc:
-        _raise_missing_file(file_path, exc)
+        return _raise_missing_file(file_path, exc)
 
     return _parse_xml(data, source=str(file_path))
 
