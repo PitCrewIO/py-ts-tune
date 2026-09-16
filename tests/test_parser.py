@@ -75,9 +75,17 @@ class ParseTuneTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 parse_tune(str(missing_path))
 
+    def test_parse_tune_raises_for_missing_relative_unknown_extension_file(self) -> None:
+        with self.assertRaises(FileNotFoundError):
+            parse_tune("missing-file.custom")
+
     def test_parse_tune_raises_for_invalid_plain_text(self) -> None:
         with self.assertRaises(TuneParseError):
             parse_tune("not xml data")
+
+    def test_parse_tune_raises_for_unsupported_source_type(self) -> None:
+        with self.assertRaises(TypeError):
+            parse_tune(123)  # type: ignore[arg-type]
 
 
 if __name__ == "__main__":
