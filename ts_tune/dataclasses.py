@@ -4,6 +4,7 @@ from types import MappingProxyType
 from dataclasses import dataclass
 from typing import Any, Mapping
 
+
 @dataclass(frozen=True)
 class TuneNode:
     """Node in a parsed TunerStudio XML tree."""
