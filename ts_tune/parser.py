@@ -27,7 +27,8 @@ def parse(source: str | PathLike[str]) -> Tune:
     unknown extensions are treated as XML text and therefore raise
     TuneParseError when they are not valid XML. After the existing-file check,
     strings beginning with ``<`` are treated as XML text before any remaining
-    filename heuristics are applied.
+    filename heuristics are applied. File-related errors report the resolved
+    filesystem path.
     """
     if isinstance(source, PathLike):
         return _parse_file(source)
@@ -49,14 +50,15 @@ def parse(source: str | PathLike[str]) -> Tune:
 
 
 def _parse_file(path: str | PathLike[str]) -> Tune:
-    """Read tune data from ``path`` and parse it as TunerStudio XML."""
+    """Read tune data from ``path`` in binary mode and parse it as XML."""
 
     file_path = Path(path).resolve(strict=False)
     if file_path.is_dir():
         raise IsADirectoryError(errno.EISDIR, "TunerStudio tune path is a directory", str(file_path))
 
     try:
-        root = ElementTree.parse(file_path).getroot()
+        with file_path.open("rb") as file_obj:
+            root = ElementTree.parse(file_obj).getroot()
     except FileNotFoundError as exc:
         raise FileNotFoundError(2, "TunerStudio tune file not found", str(file_path)) from exc
     except ElementTree.ParseError as exc:
