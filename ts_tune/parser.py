@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 from os import PathLike
 from pathlib import Path
 from xml.etree import ElementTree
@@ -52,7 +53,7 @@ def _parse_file(path: str | PathLike[str]) -> Tune:
 
     file_path = Path(path).resolve(strict=False)
     if file_path.is_dir():
-        raise IsADirectoryError(21, "TunerStudio tune path is a directory", str(file_path))
+        raise IsADirectoryError(errno.EISDIR, "TunerStudio tune path is a directory", str(file_path))
 
     try:
         root = ElementTree.parse(file_path).getroot()
@@ -83,7 +84,7 @@ def _parse_xml(data: str) -> Tune:
     """Parse XML data into a :class:`Tune` object."""
 
     try:
-        root = ElementTree.fromstring(data)
+        root = ElementTree.fromstring(data.lstrip("\ufeff \t\r\n"))
     except ElementTree.ParseError as exc:
         message = f"Invalid TunerStudio tune XML: {exc}"
         raise TuneParseError(message) from exc
