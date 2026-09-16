@@ -44,14 +44,18 @@ class ParseTuneTests(unittest.TestCase):
 
         self.assertEqual(tune.source, str(path))
         self.assertEqual(tune.root.find("table").attributes["cols"], "2")
+        self.assertEqual(tune.to_dict()["source"], str(path))
 
     def test_parse_tune_raises_for_invalid_xml(self) -> None:
         with self.assertRaises(TuneParseError):
             parse_tune("<msq>")
 
     def test_parse_tune_raises_for_missing_file(self) -> None:
-        with self.assertRaises(FileNotFoundError):
-            parse_tune("missing-file.msq")
+        with TemporaryDirectory() as directory:
+            missing_path = Path(directory) / "missing-file.msq"
+
+            with self.assertRaises(FileNotFoundError):
+                parse_tune(str(missing_path))
 
 
 if __name__ == "__main__":

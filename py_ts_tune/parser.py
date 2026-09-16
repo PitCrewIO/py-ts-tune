@@ -42,7 +42,7 @@ class Tune:
     source: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return self.root.to_dict()
+        return {"source": self.source, "root": self.root.to_dict()}
 
 
 def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
@@ -76,7 +76,7 @@ def parse_tune_bytes(data: bytes) -> Tune:
 
 def _looks_like_xml(source: str) -> bool:
     stripped = source.lstrip()
-    return stripped.startswith("<") or stripped.startswith("<?xml")
+    return stripped.startswith("<?xml") or stripped.startswith("<")
 
 
 def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
