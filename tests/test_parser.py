@@ -1,7 +1,8 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import unittest
 from unittest.mock import patch
+
+import pytest
 
 from ts_tune import TuneParseError, parse_tune, parse_tune_bytes, parse_tune_file
 
@@ -16,81 +17,85 @@ SAMPLE_TUNE = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
-class ParseTuneTests(unittest.TestCase):
-    def test_parse_tune_from_text(self) -> None:
-        tune = parse_tune(SAMPLE_TUNE)
+def test_parse_tune_from_text() -> None:
+    tune = parse_tune(SAMPLE_TUNE)
 
-        self.assertEqual(tune.root.tag, "msq")
-        constants = tune.root.find("constants")
-        assert constants is not None
-        setting = constants.find("setting")
-        assert setting is not None
-        self.assertEqual(setting.attributes["name"], "reqFuel")
-        self.assertEqual(setting.text, "6.2")
-
-    def test_parse_tune_from_bytes(self) -> None:
-        tune = parse_tune_bytes(SAMPLE_TUNE.encode("utf-8"))
-
-        table = tune.root.find("table")
-        assert table is not None
-        self.assertEqual(table.attributes["id"], "veTable1")
-        self.assertEqual(table.attributes["rows"], "2")
-
-    def test_parse_tune_from_file(self) -> None:
-        with TemporaryDirectory() as directory:
-            path = Path(directory) / "sample.msq"
-            path.write_bytes(SAMPLE_TUNE.encode("utf-8"))
-            resolved_path = str(path.resolve())
-
-            tune = parse_tune_file(path)
-
-        self.assertEqual(tune.source, resolved_path)
-        table = tune.root.find("table")
-        assert table is not None
-        self.assertEqual(table.attributes["cols"], "2")
-        self.assertEqual(tune.to_dict()["source"], resolved_path)
-
-    def test_parse_tune_raises_for_invalid_xml(self) -> None:
-        with self.assertRaises(TuneParseError):
-            parse_tune("<msq>")
-
-    def test_parse_tune_raises_for_missing_file(self) -> None:
-        with TemporaryDirectory() as directory:
-            missing_path = Path(directory) / "missing-file.msq"
-
-            with self.assertRaises(FileNotFoundError) as exc_info:
-                parse_tune(str(missing_path))
-
-            self.assertEqual(exc_info.exception.filename, str(missing_path.resolve()))
-            self.assertIn("TunerStudio tune file not found", str(exc_info.exception))
-
-    def test_parse_tune_file_raises_for_missing_file(self) -> None:
-        with TemporaryDirectory() as directory:
-            missing_path = Path(directory) / "missing-file.msq"
-
-            with self.assertRaises(FileNotFoundError):
-                parse_tune_file(missing_path)
-
-    def test_parse_tune_raises_for_missing_absolute_unknown_extension_file(self) -> None:
-        with TemporaryDirectory() as directory:
-            missing_path = Path(directory) / "missing-file.custom"
-
-            with self.assertRaises(FileNotFoundError):
-                parse_tune(str(missing_path))
-
-    def test_parse_tune_raises_for_missing_relative_unknown_extension_file(self) -> None:
-        with patch("ts_tune.parser.Path.exists", return_value=False):
-            with self.assertRaises(FileNotFoundError):
-                parse_tune("missing-file.custom")
-
-    def test_parse_tune_raises_for_invalid_plain_text(self) -> None:
-        with self.assertRaises(TuneParseError):
-            parse_tune("not xml data")
-
-    def test_parse_tune_raises_for_unsupported_source_type(self) -> None:
-        with self.assertRaises(TypeError):
-            parse_tune(123)  # type: ignore[arg-type]
+    assert tune.root.tag == "msq"
+    constants = tune.root.find("constants")
+    assert constants is not None
+    setting = constants.find("setting")
+    assert setting is not None
+    assert setting.attributes["name"] == "reqFuel"
+    assert setting.text == "6.2"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_parse_tune_from_bytes() -> None:
+    tune = parse_tune_bytes(SAMPLE_TUNE.encode("utf-8"))
+
+    table = tune.root.find("table")
+    assert table is not None
+    assert table.attributes["id"] == "veTable1"
+    assert table.attributes["rows"] == "2"
+
+
+def test_parse_tune_from_file() -> None:
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "sample.msq"
+        path.write_bytes(SAMPLE_TUNE.encode("utf-8"))
+        resolved_path = str(path.resolve())
+
+        tune = parse_tune_file(path)
+
+    assert tune.source == resolved_path
+    table = tune.root.find("table")
+    assert table is not None
+    assert table.attributes["cols"] == "2"
+    assert tune.to_dict()["source"] == resolved_path
+
+
+def test_parse_tune_raises_for_invalid_xml() -> None:
+    with pytest.raises(TuneParseError):
+        parse_tune("<msq>")
+
+
+def test_parse_tune_raises_for_missing_file() -> None:
+    with TemporaryDirectory() as directory:
+        missing_path = Path(directory) / "missing-file.msq"
+
+        with pytest.raises(FileNotFoundError) as exc_info:
+            parse_tune(str(missing_path))
+
+        assert exc_info.value.filename == str(missing_path.resolve())
+        assert "TunerStudio tune file not found" in str(exc_info.value)
+
+
+def test_parse_tune_file_raises_for_missing_file() -> None:
+    with TemporaryDirectory() as directory:
+        missing_path = Path(directory) / "missing-file.msq"
+
+        with pytest.raises(FileNotFoundError):
+            parse_tune_file(missing_path)
+
+
+def test_parse_tune_raises_for_missing_absolute_unknown_extension_file() -> None:
+    with TemporaryDirectory() as directory:
+        missing_path = Path(directory) / "missing-file.custom"
+
+        with pytest.raises(FileNotFoundError):
+            parse_tune(str(missing_path))
+
+
+def test_parse_tune_raises_for_missing_relative_unknown_extension_file() -> None:
+    with patch("ts_tune.parser.Path.exists", return_value=False):
+        with pytest.raises(FileNotFoundError):
+            parse_tune("missing-file.custom")
+
+
+def test_parse_tune_raises_for_invalid_plain_text() -> None:
+    with pytest.raises(TuneParseError):
+        parse_tune("not xml data")
+
+
+def test_parse_tune_raises_for_unsupported_source_type() -> None:
+    with pytest.raises(TypeError):
+        parse_tune(123)  # type: ignore[arg-type]

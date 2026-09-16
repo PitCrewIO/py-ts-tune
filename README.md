@@ -38,3 +38,9 @@ table = tune.root.find("table")
 if table is not None:
     print(table.attributes)
 ```
+
+## Running tests
+
+```bash
+poetry run pytest
+```
