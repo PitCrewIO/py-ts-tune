@@ -5,7 +5,7 @@ from typing import Any
 
 @dataclass(frozen=True)
 class TuneNode:
-    """Immutable node in a parsed TunerStudio XML tree."""
+    """Node in a parsed TunerStudio XML tree."""
 
     tag: str
     attributes: dict[str, str]
@@ -47,4 +47,3 @@ class Tune:
         """Convert the tune to a dictionary that preserves source metadata."""
 
         return {"source": self.source, "root": self.root.to_dict()}
-
