@@ -45,7 +45,9 @@ class ParseTuneTests(unittest.TestCase):
             tune = parse_tune_file(path)
 
         self.assertEqual(tune.source, resolved_path)
-        self.assertEqual(tune.root.find("table").attributes["cols"], "2")
+        table = tune.root.find("table")
+        self.assertIsNotNone(table)
+        self.assertEqual(table.attributes["cols"], "2")
         self.assertEqual(tune.to_dict()["source"], resolved_path)
 
     def test_parse_tune_raises_for_invalid_xml(self) -> None:
