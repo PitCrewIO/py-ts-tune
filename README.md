@@ -16,6 +16,12 @@ strings, then known tune-file names such as `.msq` or `.msqpart`.
 The parser returns a small object model that preserves the XML structure without
 requiring a hard-coded schema.
 
+## Installation
+
+```bash
+poetry add py-ts-tune
+```
+
 ## Example
 
 ```python

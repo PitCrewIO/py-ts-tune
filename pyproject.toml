@@ -1,14 +1,15 @@
 [build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "py-ts-tune"
 version = "0.1.0"
 description = "Python module for parsing EFI Analytics TunerStudio tune files."
 readme = "README.md"
-requires-python = ">=3.10"
-license = { file = "LICENSE" }
+requires-python = ">=3.10,<4.0"
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
 
-[tool.setuptools.packages.find]
-include = ["ts_tune*"]
+[tool.poetry]
+packages = [{ include = "ts_tune" }]
