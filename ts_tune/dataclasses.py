@@ -1,14 +1,15 @@
 '''Module dataclasses for TunerStudio tune representation.'''
 
+from types import MappingProxyType
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Mapping
 
 @dataclass(frozen=True)
 class TuneNode:
     """Node in a parsed TunerStudio XML tree."""
 
     tag: str
-    attributes: dict[str, str]
+    attributes: Mapping[str, str]
     text: str | None
     children: tuple["TuneNode", ...]
 
@@ -47,3 +48,9 @@ class Tune:
         """Convert the tune to a dictionary that preserves source metadata."""
 
         return {"source": self.source, "root": self.root.to_dict()}
+
+
+def freeze_attributes(attributes: dict[str, str]) -> Mapping[str, str]:
+    """Return a read-only mapping for XML element attributes."""
+
+    return MappingProxyType(dict(attributes))

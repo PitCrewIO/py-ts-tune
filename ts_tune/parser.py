@@ -6,7 +6,7 @@ from os import PathLike
 from pathlib import Path
 from xml.etree import ElementTree
 
-from .dataclasses import Tune, TuneNode
+from .dataclasses import Tune, TuneNode, freeze_attributes
 
 
 PATH_SUFFIXES = {".bin", ".msq", ".msqpart", ".table", ".xml"}
@@ -14,6 +14,7 @@ PATH_SUFFIXES = {".bin", ".msq", ".msqpart", ".table", ".xml"}
 
 class TuneParseError(ValueError):
     """Raised when TunerStudio tune data cannot be parsed as XML."""
+
 
 def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
     """Parse a TunerStudio tune from XML text, bytes, or a path-like source.
@@ -104,7 +105,7 @@ def _build_node(element: ElementTree.Element) -> TuneNode:
     text = element.text.strip() if element.text and element.text.strip() else None
     return TuneNode(
         tag=element.tag,
-        attributes=dict(element.attrib),
+        attributes=freeze_attributes(dict(element.attrib)),
         text=text,
         children=tuple(_build_node(child) for child in element),
     )
