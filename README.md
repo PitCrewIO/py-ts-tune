@@ -5,13 +5,12 @@ Python module for parsing EFI Analytics TunerStudio tune files.
 `ts_tune` accepts:
 
 - XML tune text already loaded in memory
-- XML tune bytes that were read in binary mode
 - a file path, which the library opens in binary mode and parses
 
 Use `parse_tune(...)` as a convenience entry point, or call `parse_tune_file(...)`
-and `parse_tune_bytes(...)` directly when you want to avoid any ambiguity. The
-generic `parse_tune(...)` helper checks existing files first, then XML-looking
-strings, then known tune-file names such as `.msq` or `.msqpart`.
+directly when you want to explicitly load from disk. The generic `parse_tune(...)`
+helper checks existing files first, then XML-looking strings, then known
+tune-file names such as `.msq` or `.msqpart`.
 
 The parser returns a small object model that preserves the XML structure without
 requiring a hard-coded schema.

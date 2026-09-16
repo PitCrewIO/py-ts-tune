@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from ts_tune import TuneParseError, parse_tune, parse_tune_bytes, parse_tune_file
+from ts_tune import TuneParseError, parse_tune, parse_tune_file
 
 
 SAMPLE_TUNE = """<?xml version="1.0" encoding="UTF-8"?>
@@ -26,15 +26,6 @@ def test_parse_tune_from_text() -> None:
     assert setting is not None
     assert setting.attributes["name"] == "reqFuel"
     assert setting.text == "6.2"
-
-
-def test_parse_tune_from_bytes() -> None:
-    tune = parse_tune_bytes(SAMPLE_TUNE.encode("utf-8"))
-
-    table = tune.root.find("table")
-    assert table is not None
-    assert table.attributes["id"] == "veTable1"
-    assert table.attributes["rows"] == "2"
 
 
 def test_parse_tune_from_file() -> None:
@@ -99,3 +90,8 @@ def test_parse_tune_raises_for_invalid_plain_text() -> None:
 def test_parse_tune_raises_for_unsupported_source_type() -> None:
     with pytest.raises(TypeError):
         parse_tune(123)  # type: ignore[arg-type]
+
+
+def test_parse_tune_raises_for_bytes_input() -> None:
+    with pytest.raises(TypeError):
+        parse_tune(SAMPLE_TUNE.encode("utf-8"))  # type: ignore[arg-type]
