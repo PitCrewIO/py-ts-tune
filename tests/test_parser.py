@@ -54,8 +54,10 @@ class ParseTuneTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             missing_path = Path(directory) / "missing-file.msq"
 
-            with self.assertRaises(FileNotFoundError):
+            with self.assertRaises(FileNotFoundError) as exc_info:
                 parse_tune(str(missing_path))
+
+        self.assertEqual(exc_info.exception.filename, str(missing_path.resolve()))
 
     def test_parse_tune_file_raises_for_missing_file(self) -> None:
         with TemporaryDirectory() as directory:
@@ -63,6 +65,10 @@ class ParseTuneTests(unittest.TestCase):
 
             with self.assertRaises(FileNotFoundError):
                 parse_tune_file(missing_path)
+
+    def test_parse_tune_raises_for_invalid_plain_text(self) -> None:
+        with self.assertRaises(TuneParseError):
+            parse_tune("not xml data")
 
 
 if __name__ == "__main__":
