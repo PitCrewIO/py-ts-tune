@@ -24,8 +24,9 @@ def parse(source: str | PathLike[str]) -> Tune:
     file extensions, are treated as filenames and raise FileNotFoundError when
     the file does not exist. Relative strings without path separators and with
     unknown extensions are treated as XML text and therefore raise
-    TuneParseError when they are not valid XML. Strings beginning with ``<``
-    are always treated as XML text before any filename heuristics are applied.
+    TuneParseError when they are not valid XML. After the existing-file check,
+    strings beginning with ``<`` are treated as XML text before any remaining
+    filename heuristics are applied.
     """
     if isinstance(source, PathLike):
         return _parse_file(source)
@@ -68,14 +69,14 @@ def _looks_like_xml(source: str) -> bool:
     """Return whether a string appears to contain XML content."""
 
     stripped = source.lstrip("\ufeff \t\r\n")
-    return stripped.startswith("<?xml") or stripped.startswith("<")
+    return stripped.startswith("<")
 
 
 def _looks_like_path(source: str) -> bool:
     """Return whether a string should be treated as a likely filename."""
 
     path = Path(source)
-    return path.suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
+    return path.is_absolute() or path.suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
 
 
 def _parse_xml(data: str) -> Tune:
