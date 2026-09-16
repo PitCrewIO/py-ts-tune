@@ -73,7 +73,8 @@ def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
         return _parse_xml(source)
 
     if _looks_like_path(source):
-        raise FileNotFoundError(2, "TunerStudio tune file not found", str(path.resolve(strict=False)))
+        resolved_path = path.resolve(strict=False)
+        raise FileNotFoundError(2, "TunerStudio tune file not found", str(resolved_path))
 
     return _parse_xml(source)
 

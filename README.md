@@ -22,6 +22,10 @@ requiring a hard-coded schema.
 poetry add py-ts-tune
 ```
 
+```bash
+pip install py-ts-tune
+```
+
 ## Example
 
 ```python
