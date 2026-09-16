@@ -4,7 +4,7 @@ import errno
 from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 from xml.etree import ElementTree
 
 
@@ -95,7 +95,7 @@ def _looks_like_path(source: str) -> bool:
     return Path(source).suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
 
 
-def _raise_missing_file(path: Path, exc: FileNotFoundError | None = None) -> None:
+def _raise_missing_file(path: Path, exc: FileNotFoundError | None = None) -> NoReturn:
     raise FileNotFoundError(errno.ENOENT, "TunerStudio tune file not found", str(path)) from exc
 
 

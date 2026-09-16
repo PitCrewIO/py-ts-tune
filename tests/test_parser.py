@@ -39,12 +39,13 @@ class ParseTuneTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             path = Path(directory) / "sample.msq"
             path.write_bytes(SAMPLE_TUNE.encode("utf-8"))
+            resolved_path = str(path.resolve())
 
             tune = parse_tune_file(path)
 
-        self.assertEqual(tune.source, str(path.resolve()))
+        self.assertEqual(tune.source, resolved_path)
         self.assertEqual(tune.root.find("table").attributes["cols"], "2")
-        self.assertEqual(tune.to_dict()["source"], str(path.resolve()))
+        self.assertEqual(tune.to_dict()["source"], resolved_path)
 
     def test_parse_tune_raises_for_invalid_xml(self) -> None:
         with self.assertRaises(TuneParseError):
