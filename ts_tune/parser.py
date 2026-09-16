@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import errno
 from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
-from typing import Any, NoReturn
+from typing import Any
 from xml.etree import ElementTree
 
 
@@ -74,7 +73,7 @@ def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
         return _parse_xml(source)
 
     if _looks_like_path(source):
-        _raise_missing_file(path.resolve(strict=False))
+        raise FileNotFoundError(2, "TunerStudio tune file not found", str(path.resolve(strict=False)))
 
     return _parse_xml(source)
 
@@ -84,7 +83,7 @@ def parse_tune_file(path: str | PathLike[str]) -> Tune:
     try:
         data = file_path.read_bytes()
     except FileNotFoundError as exc:
-        return _raise_missing_file(file_path, exc)
+        raise FileNotFoundError(2, "TunerStudio tune file not found", str(file_path)) from exc
 
     return _parse_xml(data, source=str(file_path))
 
@@ -107,10 +106,6 @@ def _looks_like_path(source: str) -> bool:
         or "\\" in source
         or ("." in filename and "<" not in source and ">" not in source and "\n" not in source)
     )
-
-
-def _raise_missing_file(path: Path, exc: FileNotFoundError | None = None) -> NoReturn:
-    raise FileNotFoundError(errno.ENOENT, "TunerStudio tune file not found", str(path)) from exc
 
 
 def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
