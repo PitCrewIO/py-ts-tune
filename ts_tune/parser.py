@@ -50,6 +50,13 @@ class Tune:
 
 
 def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
+    """Parse a TunerStudio tune from XML text, bytes, or a path-like source.
+
+    Existing files are loaded first. For string input that is not XML, values
+    that look path-like, such as strings with path separators or filename
+    extensions, are treated as filenames and raise FileNotFoundError when the
+    file does not exist.
+    """
     if isinstance(source, bytes):
         return parse_tune_bytes(source)
 
