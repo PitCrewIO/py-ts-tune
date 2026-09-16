@@ -84,7 +84,9 @@ def test_parse_tune_raises_for_missing_absolute_unknown_extension_file() -> None
             parse_tune(str(missing_path))
 
 
-def test_parse_tune_raises_for_missing_relative_unknown_extension_file() -> None:
+def test_parse_tune_raises_for_missing_relative_unknown_extension_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+
     with pytest.raises(FileNotFoundError):
         parse_tune("missing-file.custom")
 
