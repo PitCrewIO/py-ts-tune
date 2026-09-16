@@ -50,12 +50,18 @@ def parse_tune_file(path: str | PathLike[str]) -> Tune:
     """Read tune data from ``path`` and parse it as TunerStudio XML."""
 
     file_path = Path(path).resolve(strict=False)
+    if file_path.is_dir():
+        raise IsADirectoryError(21, "TunerStudio tune path is a directory", str(file_path))
+
     try:
-        data = file_path.read_bytes()
+        root = ElementTree.parse(file_path).getroot()
     except FileNotFoundError as exc:
         raise FileNotFoundError(2, "TunerStudio tune file not found", str(file_path)) from exc
+    except ElementTree.ParseError as exc:
+        message = f"Invalid TunerStudio tune XML: {exc} ({file_path})"
+        raise TuneParseError(message) from exc
 
-    return _parse_xml(data, source=str(file_path))
+    return Tune(root=_build_node(root), source=str(file_path))
 
 
 def _looks_like_xml(source: str) -> bool:
@@ -72,10 +78,8 @@ def _looks_like_path(source: str) -> bool:
     return path.suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
 
 
-def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
+def _parse_xml(data: str, source: str | None = None) -> Tune:
     """Parse XML data into a :class:`Tune` object.
-
-    ``bytes`` input is only used internally for data read by ``parse_tune_file``.
     """
 
     try:

@@ -67,6 +67,12 @@ def test_parse_tune_file_raises_for_missing_file() -> None:
             parse_tune_file(missing_path)
 
 
+def test_parse_tune_file_raises_for_directory() -> None:
+    with TemporaryDirectory() as directory:
+        with pytest.raises(IsADirectoryError):
+            parse_tune_file(directory)
+
+
 def test_parse_tune_raises_for_missing_absolute_unknown_extension_file() -> None:
     with TemporaryDirectory() as directory:
         missing_path = Path(directory) / "missing-file.custom"
