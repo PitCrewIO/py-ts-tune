@@ -47,6 +47,8 @@ def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
 
 
 def parse_tune_file(path: str | PathLike[str]) -> Tune:
+    """Read tune data from ``path`` and parse it as TunerStudio XML."""
+
     file_path = Path(path).resolve(strict=False)
     try:
         data = file_path.read_bytes()
@@ -57,15 +59,21 @@ def parse_tune_file(path: str | PathLike[str]) -> Tune:
 
 
 def parse_tune_bytes(data: bytes) -> Tune:
+    """Parse a TunerStudio tune from raw bytes."""
+
     return _parse_xml(data)
 
 
 def _looks_like_xml(source: str) -> bool:
+    """Return whether a string appears to contain XML content."""
+
     stripped = source.lstrip("\ufeff \t\r\n")
     return stripped.startswith("<?xml") or stripped.startswith("<")
 
 
 def _looks_like_path(source: str) -> bool:
+    """Return whether a string should be treated as a likely filename."""
+
     path = Path(source)
     filename = path.name
     return (
@@ -77,6 +85,8 @@ def _looks_like_path(source: str) -> bool:
 
 
 def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
+    """Parse XML data into a :class:`Tune` object."""
+
     try:
         root = ElementTree.fromstring(data)
     except ElementTree.ParseError as exc:
@@ -89,6 +99,8 @@ def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
 
 
 def _build_node(element: ElementTree.Element) -> TuneNode:
+    """Recursively convert an XML element tree into :class:`TuneNode` objects."""
+
     text = element.text.strip() if element.text and element.text.strip() else None
     return TuneNode(
         tag=element.tag,

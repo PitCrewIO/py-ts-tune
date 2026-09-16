@@ -1,3 +1,5 @@
+"""Public package exports for TunerStudio tune parsing."""
+
 from .parser import Tune, TuneNode, TuneParseError, parse_tune, parse_tune_bytes, parse_tune_file
 
 __all__ = [
