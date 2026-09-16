@@ -69,13 +69,7 @@ def _looks_like_path(source: str) -> bool:
     """Return whether a string should be treated as a likely filename."""
 
     path = Path(source)
-    filename = path.name
-    return (
-        path.suffix.lower() in PATH_SUFFIXES
-        or "/" in source
-        or "\\" in source
-        or filename in {".", ".."}
-    )
+    return path.suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
 
 
 def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
@@ -85,7 +79,7 @@ def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
         root = ElementTree.fromstring(data)
     except ElementTree.ParseError as exc:
         message = f"Invalid TunerStudio tune XML: {exc}"
-        if source:
+        if source is not None:
             message = f"{message} ({source})"
         raise TuneParseError(message) from exc
 
