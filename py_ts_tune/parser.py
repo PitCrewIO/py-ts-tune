@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import errno
 from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
@@ -66,14 +67,19 @@ def parse_tune(source: str | bytes | PathLike[str]) -> Tune:
         return _parse_xml(source)
 
     if _looks_like_path(source):
-        return parse_tune_file(path)
+        _raise_missing_file(path.resolve(strict=False))
 
     return _parse_xml(source)
 
 
 def parse_tune_file(path: str | PathLike[str]) -> Tune:
     file_path = Path(path).resolve(strict=False)
-    return _parse_xml(file_path.read_bytes(), source=str(file_path))
+    try:
+        data = file_path.read_bytes()
+    except FileNotFoundError as exc:
+        _raise_missing_file(file_path, exc)
+
+    return _parse_xml(data, source=str(file_path))
 
 
 def parse_tune_bytes(data: bytes) -> Tune:
@@ -87,6 +93,10 @@ def _looks_like_xml(source: str) -> bool:
 
 def _looks_like_path(source: str) -> bool:
     return Path(source).suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
+
+
+def _raise_missing_file(path: Path, exc: FileNotFoundError | None = None) -> None:
+    raise FileNotFoundError(errno.ENOENT, "TunerStudio tune file not found", str(path)) from exc
 
 
 def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:

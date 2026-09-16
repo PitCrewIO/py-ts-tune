@@ -42,9 +42,9 @@ class ParseTuneTests(unittest.TestCase):
 
             tune = parse_tune_file(path)
 
-        self.assertEqual(tune.source, str(path))
+        self.assertEqual(tune.source, str(path.resolve()))
         self.assertEqual(tune.root.find("table").attributes["cols"], "2")
-        self.assertEqual(tune.to_dict()["source"], str(path))
+        self.assertEqual(tune.to_dict()["source"], str(path.resolve()))
 
     def test_parse_tune_raises_for_invalid_xml(self) -> None:
         with self.assertRaises(TuneParseError):
@@ -58,6 +58,7 @@ class ParseTuneTests(unittest.TestCase):
                 parse_tune(str(missing_path))
 
         self.assertEqual(exc_info.exception.filename, str(missing_path.resolve()))
+        self.assertIn("TunerStudio tune file not found", str(exc_info.exception))
 
     def test_parse_tune_file_raises_for_missing_file(self) -> None:
         with TemporaryDirectory() as directory:
