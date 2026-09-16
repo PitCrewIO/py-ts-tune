@@ -78,13 +78,18 @@ def test_parse_tune_raises_for_missing_absolute_unknown_extension_file() -> None
 def test_parse_tune_raises_for_missing_relative_unknown_extension_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(TuneParseError):
         parse_tune("missing-file.custom")
 
 
 def test_parse_tune_raises_for_invalid_plain_text() -> None:
     with pytest.raises(TuneParseError):
         parse_tune("not xml data")
+
+
+def test_parse_tune_raises_for_invalid_dotted_text() -> None:
+    with pytest.raises(TuneParseError):
+        parse_tune("v1.0")
 
 
 def test_parse_tune_raises_for_unsupported_source_type() -> None:

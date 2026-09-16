@@ -72,7 +72,7 @@ def _looks_like_path(source: str) -> bool:
         path.suffix.lower() in PATH_SUFFIXES
         or "/" in source
         or "\\" in source
-        or ("." in filename and "<" not in source and ">" not in source and "\n" not in source)
+        or filename in {".", ".."}
     )
 
 
