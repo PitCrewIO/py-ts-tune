@@ -16,6 +16,11 @@ SAMPLE_TUNE = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+class BytesPath:
+    def __fspath__(self) -> bytes:
+        return b"sample.msq"
+
+
 def test_parse_from_text() -> None:
     tune = parse(SAMPLE_TUNE)
 
@@ -106,3 +111,8 @@ def test_parse_raises_for_unsupported_source_type() -> None:
 def test_parse_raises_for_bytes_input() -> None:
     with pytest.raises(TypeError):
         parse(SAMPLE_TUNE.encode("utf-8"))  # type: ignore[arg-type]
+
+
+def test_parse_raises_for_bytes_pathlike() -> None:
+    with pytest.raises(TypeError):
+        parse(BytesPath())  # type: ignore[arg-type]

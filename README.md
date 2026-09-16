@@ -8,8 +8,8 @@ Python module for parsing EFI Analytics TunerStudio tune files.
 - a file path, which the library opens in binary mode and parses
 
 Use `parse(...)` as the single public entry point. It checks existing files
-first, then XML-looking strings, then known
-tune-file names such as `.msq` or `.msqpart`.
+first, then XML-looking strings, then known tune-file names such as `.msq` or
+`.msqpart`.
 
 The parser returns a small object model that preserves the XML structure without
 requiring a hard-coded schema.

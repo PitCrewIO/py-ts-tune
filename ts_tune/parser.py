@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import errno
-from os import PathLike
+from os import PathLike, fspath
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -31,7 +31,7 @@ def parse(source: str | PathLike[str]) -> Tune:
     filesystem path.
     """
     if isinstance(source, PathLike):
-        return _parse_file(source)
+        return _parse_file(_coerce_path(source))
 
     if not isinstance(source, str):
         raise TypeError("source must be XML text or a filesystem path")
@@ -52,7 +52,7 @@ def parse(source: str | PathLike[str]) -> Tune:
 def _parse_file(path: str | PathLike[str]) -> Tune:
     """Read tune data from ``path`` in binary mode and parse it as XML."""
 
-    file_path = Path(path).resolve(strict=False)
+    file_path = _coerce_path(path).resolve(strict=False)
     if file_path.is_dir():
         raise IsADirectoryError(errno.EISDIR, "TunerStudio tune path is a directory", str(file_path))
 
@@ -79,6 +79,15 @@ def _looks_like_path(path: Path, source: str) -> bool:
     """Return whether a string should be treated as a likely filename."""
 
     return path.is_absolute() or path.suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
+
+
+def _coerce_path(path: str | PathLike[str]) -> Path:
+    """Convert a path-like input to ``Path`` while rejecting byte paths."""
+
+    raw_path = fspath(path)
+    if not isinstance(raw_path, str):
+        raise TypeError("source must be XML text or a string filesystem path")
+    return Path(raw_path)
 
 
 def _parse_xml(data: str) -> Tune:
