@@ -24,7 +24,8 @@ def parse(source: str | PathLike[str]) -> Tune:
     file extensions, are treated as filenames and raise FileNotFoundError when
     the file does not exist. Relative strings without path separators and with
     unknown extensions are treated as XML text and therefore raise
-    TuneParseError when they are not valid XML.
+    TuneParseError when they are not valid XML. Strings beginning with ``<``
+    are always treated as XML text before any filename heuristics are applied.
     """
     if isinstance(source, PathLike):
         return _parse_file(source)
