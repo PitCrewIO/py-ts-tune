@@ -11,4 +11,4 @@ requires-python = ">=3.10"
 license = { file = "LICENSE" }
 
 [tool.setuptools.packages.find]
-include = ["py_ts_tune*"]
+include = ["ts_tune*"]

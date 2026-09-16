@@ -2,7 +2,7 @@
 
 Python module for parsing EFI Analytics TunerStudio tune files.
 
-`py_ts_tune` accepts:
+`ts_tune` accepts:
 
 - XML tune text already loaded in memory
 - XML tune bytes that were read in binary mode
@@ -19,7 +19,7 @@ requiring a hard-coded schema.
 ## Example
 
 ```python
-from py_ts_tune import parse_tune
+from ts_tune import parse_tune
 
 tune = parse_tune("example.msq")
 print(tune.root.tag)

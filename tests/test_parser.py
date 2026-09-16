@@ -2,7 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from py_ts_tune import TuneParseError, parse_tune, parse_tune_bytes, parse_tune_file
+from ts_tune import TuneParseError, parse_tune, parse_tune_bytes, parse_tune_file
 
 
 SAMPLE_TUNE = """<?xml version="1.0" encoding="UTF-8"?>
