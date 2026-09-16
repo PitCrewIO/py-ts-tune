@@ -73,7 +73,10 @@ def _looks_like_path(source: str) -> bool:
 
 
 def _parse_xml(data: str | bytes, source: str | None = None) -> Tune:
-    """Parse XML data into a :class:`Tune` object."""
+    """Parse XML data into a :class:`Tune` object.
+
+    ``bytes`` input is only used internally for data read by ``parse_tune_file``.
+    """
 
     try:
         root = ElementTree.fromstring(data)
