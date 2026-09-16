@@ -16,7 +16,7 @@ class TuneParseError(ValueError):
     """Raised when TunerStudio tune data cannot be parsed as XML."""
 
 
-def parse_tune(source: str | PathLike[str]) -> Tune:
+def parse(source: str | PathLike[str]) -> Tune:
     """Parse a TunerStudio tune from XML text or a path-like source.
 
     Existing files are loaded first. For string input that is not XML, values
@@ -27,14 +27,14 @@ def parse_tune(source: str | PathLike[str]) -> Tune:
     TuneParseError when they are not valid XML.
     """
     if isinstance(source, PathLike):
-        return parse_tune_file(source)
+        return _parse_file(source)
 
     if not isinstance(source, str):
         raise TypeError("source must be XML text or a filesystem path")
 
     path = Path(source)
     if path.exists():
-        return parse_tune_file(path)
+        return _parse_file(path)
 
     if _looks_like_xml(source):
         return _parse_xml(source)
@@ -46,7 +46,7 @@ def parse_tune(source: str | PathLike[str]) -> Tune:
     return _parse_xml(source)
 
 
-def parse_tune_file(path: str | PathLike[str]) -> Tune:
+def _parse_file(path: str | PathLike[str]) -> Tune:
     """Read tune data from ``path`` and parse it as TunerStudio XML."""
 
     file_path = Path(path).resolve(strict=False)

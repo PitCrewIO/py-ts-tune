@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from ts_tune import TuneParseError, parse_tune, parse_tune_file
+from ts_tune import TuneParseError, parse
 
 
 SAMPLE_TUNE = """<?xml version="1.0" encoding="UTF-8"?>
@@ -16,8 +16,8 @@ SAMPLE_TUNE = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
-def test_parse_tune_from_text() -> None:
-    tune = parse_tune(SAMPLE_TUNE)
+def test_parse_from_text() -> None:
+    tune = parse(SAMPLE_TUNE)
 
     assert tune.root.tag == "msq"
     constants = tune.root.find("constants")
@@ -28,13 +28,13 @@ def test_parse_tune_from_text() -> None:
     assert setting.text == "6.2"
 
 
-def test_parse_tune_from_file() -> None:
+def test_parse_from_file() -> None:
     with TemporaryDirectory() as directory:
         path = Path(directory) / "sample.msq"
         path.write_bytes(SAMPLE_TUNE.encode("utf-8"))
         resolved_path = str(path.resolve())
 
-        tune = parse_tune_file(path)
+        tune = parse(path)
 
     assert tune.source == resolved_path
     table = tune.root.find("table")
@@ -43,66 +43,66 @@ def test_parse_tune_from_file() -> None:
     assert tune.to_dict()["source"] == resolved_path
 
 
-def test_parse_tune_raises_for_invalid_xml() -> None:
+def test_parse_raises_for_invalid_xml() -> None:
     with pytest.raises(TuneParseError):
-        parse_tune("<msq>")
+        parse("<msq>")
 
 
-def test_parse_tune_raises_for_missing_file() -> None:
+def test_parse_raises_for_missing_file() -> None:
     with TemporaryDirectory() as directory:
         missing_path = Path(directory) / "missing-file.msq"
 
         with pytest.raises(FileNotFoundError) as exc_info:
-            parse_tune(str(missing_path))
+            parse(str(missing_path))
 
         assert exc_info.value.filename == str(missing_path.resolve())
         assert "TunerStudio tune file not found" in str(exc_info.value)
 
 
-def test_parse_tune_file_raises_for_missing_file() -> None:
+def test_parse_raises_for_missing_file_pathlike() -> None:
     with TemporaryDirectory() as directory:
         missing_path = Path(directory) / "missing-file.msq"
 
         with pytest.raises(FileNotFoundError):
-            parse_tune_file(missing_path)
+            parse(missing_path)
 
 
-def test_parse_tune_file_raises_for_directory() -> None:
+def test_parse_raises_for_directory() -> None:
     with TemporaryDirectory() as directory:
         with pytest.raises(IsADirectoryError):
-            parse_tune_file(directory)
+            parse(directory)
 
 
-def test_parse_tune_raises_for_missing_absolute_unknown_extension_file() -> None:
+def test_parse_raises_for_missing_absolute_unknown_extension_file() -> None:
     with TemporaryDirectory() as directory:
         missing_path = Path(directory) / "missing-file.custom"
 
         with pytest.raises(FileNotFoundError):
-            parse_tune(str(missing_path))
+            parse(str(missing_path))
 
 
-def test_parse_tune_relative_unknown_extension_raises_parse_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_relative_unknown_extension_raises_parse_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
 
     with pytest.raises(TuneParseError):
-        parse_tune("missing-file.custom")
+        parse("missing-file.custom")
 
 
-def test_parse_tune_raises_for_invalid_plain_text() -> None:
+def test_parse_raises_for_invalid_plain_text() -> None:
     with pytest.raises(TuneParseError):
-        parse_tune("not xml data")
+        parse("not xml data")
 
 
-def test_parse_tune_raises_for_invalid_dotted_text() -> None:
+def test_parse_raises_for_invalid_dotted_text() -> None:
     with pytest.raises(TuneParseError):
-        parse_tune("v1.0")
+        parse("v1.0")
 
 
-def test_parse_tune_raises_for_unsupported_source_type() -> None:
+def test_parse_raises_for_unsupported_source_type() -> None:
     with pytest.raises(TypeError):
-        parse_tune(123)  # type: ignore[arg-type]
+        parse(123)  # type: ignore[arg-type]
 
 
-def test_parse_tune_raises_for_bytes_input() -> None:
+def test_parse_raises_for_bytes_input() -> None:
     with pytest.raises(TypeError):
-        parse_tune(SAMPLE_TUNE.encode("utf-8"))  # type: ignore[arg-type]
+        parse(SAMPLE_TUNE.encode("utf-8"))  # type: ignore[arg-type]
