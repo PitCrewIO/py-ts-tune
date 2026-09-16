@@ -92,7 +92,14 @@ def _looks_like_xml(source: str) -> bool:
 
 
 def _looks_like_path(source: str) -> bool:
-    return Path(source).suffix.lower() in PATH_SUFFIXES or "/" in source or "\\" in source
+    path = Path(source)
+    filename = path.name
+    return (
+        path.suffix.lower() in PATH_SUFFIXES
+        or "/" in source
+        or "\\" in source
+        or ("." in filename and "<" not in source and ">" not in source and "\n" not in source)
+    )
 
 
 def _raise_missing_file(path: Path, exc: FileNotFoundError | None = None) -> NoReturn:

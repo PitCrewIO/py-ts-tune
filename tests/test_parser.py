@@ -68,6 +68,13 @@ class ParseTuneTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 parse_tune_file(missing_path)
 
+    def test_parse_tune_raises_for_missing_unknown_extension_file(self) -> None:
+        with TemporaryDirectory() as directory:
+            missing_path = Path(directory) / "missing-file.custom"
+
+            with self.assertRaises(FileNotFoundError):
+                parse_tune(str(missing_path))
+
     def test_parse_tune_raises_for_invalid_plain_text(self) -> None:
         with self.assertRaises(TuneParseError):
             parse_tune("not xml data")
