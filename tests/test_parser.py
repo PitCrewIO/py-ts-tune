@@ -22,9 +22,9 @@ class ParseTuneTests(unittest.TestCase):
 
         self.assertEqual(tune.root.tag, "msq")
         constants = tune.root.find("constants")
-        self.assertIsNotNone(constants)
+        assert constants is not None
         setting = constants.find("setting")
-        self.assertIsNotNone(setting)
+        assert setting is not None
         self.assertEqual(setting.attributes["name"], "reqFuel")
         self.assertEqual(setting.text, "6.2")
 
@@ -32,7 +32,7 @@ class ParseTuneTests(unittest.TestCase):
         tune = parse_tune_bytes(SAMPLE_TUNE.encode("utf-8"))
 
         table = tune.root.find("table")
-        self.assertIsNotNone(table)
+        assert table is not None
         self.assertEqual(table.attributes["id"], "veTable1")
         self.assertEqual(table.attributes["rows"], "2")
 
@@ -46,7 +46,7 @@ class ParseTuneTests(unittest.TestCase):
 
         self.assertEqual(tune.source, resolved_path)
         table = tune.root.find("table")
-        self.assertIsNotNone(table)
+        assert table is not None
         self.assertEqual(table.attributes["cols"], "2")
         self.assertEqual(tune.to_dict()["source"], resolved_path)
 
